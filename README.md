@@ -1,36 +1,32 @@
-Getting and Cleaning Data - Project
+Tidy-Data
+Repository for Getting and Cleaning Data.
+run_analysis.R
 
-Source dataset https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip.
+When sourced, the script displays instuctions for running data download and processing functions. The script checks if the required R packages are installed and tries to install them if previous installation is not found.
 
-You should create one R script called run_analysis.R that does the following.
-Merges the training and the test sets to create one data set.
-Extracts only the measurements on the mean and standard deviation for each measurement.
-Uses descriptive activity names to name the activities in the data set
-Appropriately labels the data set with descriptive activity names.
-Creates a second, independent tidy data set with the average of each variable for each activity and each subject.
-Notes
+source('./run_analysis.R')
+download.data()
+run.analysis()
+In the case the Samsung data is already unzipped and directory with the dataset is available as UCI HAR Dataset subdirectory of the current directory, the processing function run.analysis() can be called straight away.
 
-Only vaiables containing mean() & std() are used.
-Requires the plyr & reshape2 packages.
-Assumes the dataset is unzipped in the current directory.
-Constructed using the following:
+Processing steps
 
-> version
-platform       x86_64-apple-darwin12.4.0
-arch           x86_64
-os             darwin12.4.0
-system         x86_64, darwin12.4.0
-status
-major          3
-minor          0.1
-year           2013
-month          05
-day            16
-svn rev        62743
-language       R
-version.string R version 3.0.1 (2013-05-16)
-nickname       Good Sport
-Running
-
-$ Rscript run_analysis.R
-Yields tidy.txt & tidy.mean.txt.
+When sourced, the script chechs if the required R packages are available and proceeds to install them if they are not found
+Calling download.data() downloads the zipped dataset and unarchives it.
+Calling run.analysis() starts the actual data processing:
+Feature vector label data is loaded from features.txt
+Using regex with grepl, subset of label data for selecting desired data coluns is created.
+Activity labels are loaded from features.txt
+Activity labels (id->label) and selected features (id->label) are given as parameters to function which loads the training or test dataset, based on the type value given also as a parameter.
+Paths to data files are created based on type parameter
+Data files are loaded. Feature vector data is filtered using ids of the selected features.
+Activity and subject id data are loaded
+Feature vector data is renamed using the names of selected features
+Activies and subjects are given labels using factor levels of activity and subject id data.
+Finally, processed dataset is returned.
+(The previous processing is repeated to both training and test datasets.)
+Training and test datasets are merged using rbind() and converted to data.table to make it easier to do groupwise operations in the following step
+Mean is calculated for all variables for each activity and subject
+Variable names are loaded to separate vector and tidied to follow camelCase-convention.
+New names are applied to dataset
+Tidy dataset is written to disk.
